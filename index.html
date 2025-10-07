@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>特定計量器 総合ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #fdfaf6;
+            color: #333;
+        }
+        .bg-base { background-color: #fdfaf6; }
+        .bg-card { background-color: #ffffff; }
+        .bg-accent-household { background-color: #e3f2fd; }
+        .bg-accent-business { background-color: #e6f4ea; }
+        .text-primary { color: #2d3748; }
+        .text-secondary { color: #718096; }
+        .text-accent-household { color: #3b82f6; }
+        .text-accent-business { color: #16a34a; }
+        .nav-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+        .nav-item.active-household {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        .nav-item.active-business {
+            color: #16a34a;
+            border-bottom-color: #16a34a;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .choice-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .choice-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .comparison-table td, .comparison-table th {
+            padding: 1rem 0.75rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .comparison-table th {
+            background-color: #f8fafc;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+         .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: トップページを大幅に拡充し、計量器全体の階層構造（計量器＞特定計量器＞家庭用特定計量器）を視覚的な図で提示。さらに、法律で定められた18種類の特定計量器をリスト表示する。これにより、ユーザーはまず計量法の全体像と対象範囲を正確に把握した上で、「取引・証明用」と「家庭用」という詳細なカテゴリ選択に進むことができる。この構造は、学習の導入として最適なコンテキストを提供する。 -->
+    <!-- Visualization & Content Choices: 1.階層関係: Goal=カテゴリの包含関係を直感的に理解させる, Method=入れ子構造のボックス図解(HTML/CSS), Justification=視覚的に「中に含まれる」関係が分かりやすく、複雑な法的分類を単純化して伝えられる。2.計量器リスト: Goal=特定計量器の具体的な範囲を示す, Method=多段組のグリッドレイアウト(HTML/CSS), Justification=18種類という多い項目をコンパクトに整理し、一覧性を高める。3.マーク画像: Goal=実際のマークを認識させる, Method=画像をBase64エンコードし、imgタグのsrcに直接埋め込む, Justification=外部ファイルへの依存をなくし、単一HTMLファイル内で確実に画像を表示させるため。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-base text-primary">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <div id="main-page" class="page active fade-in">
+            <header class="text-center mb-10">
+                <h1 class="text-4xl md:text-5xl font-bold text-accent-household mb-2">特定計量器の世界へようこそ</h1>
+                <p class="text-secondary text-lg">社会の公正と安全を支える「はかる」のルール</p>
+            </header>
+            <main>
+                <section class="mb-12">
+                    <h2 class="text-2xl font-bold text-center mb-4">計量器の分類と関係性</h2>
+                    <p class="text-center text-secondary mb-6 max-w-3xl mx-auto">
+                        私たちの周りには多くの「計量器」がありますが、法律上の位置づけは異なります。特に重要なのがこの関係性です。
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 p-4 sm:p-8 rounded-lg text-center">
+                        <h3 class="text-xl font-bold mb-2">計量器 (Measuring Instruments)</h3>
+                        <p class="text-sm text-secondary mb-4">世の中にある、あらゆる「はかる」ための器具</p>
+                        <div class="bg-gray-100 border border-gray-300 p-4 sm:p-6 rounded">
+                            <h3 class="text-lg font-bold mb-2 text-red-600">特定計量器 (Specified Measuring Instruments)</h3>
+                            <p class="text-sm text-secondary mb-4">その中でも、取引や証明に使われたり、国民生活への影響が大きいため、<br class="hidden sm:inline">計量法で特に構造や性能が定められている18種類の計量器</p>
+                            <div class="bg-gray-200 border border-gray-400 p-4 rounded">
+                                <h3 class="text-md font-bold text-blue-600">家庭用特定計量器 (Household use)</h3>
+                                <p class="text-xs text-secondary">特定計量器のうち、家庭での使用に特化したもの（体重計など）</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="mb-12">
+                    <h2 class="text-2xl font-bold text-center mb-4">特定計量器にはどんな種類があるの？</h2>
+                    <p class="text-center text-secondary mb-6 max-w-3xl mx-auto">計量法で定められている「特定計量器」は以下の18種類です。意外なものも含まれているかもしれません。</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">はかり</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">分銅</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">体温計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">血圧計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">水道メーター</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">ガスメーター</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">タクシーメーター</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">積算熱量計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">流量計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">圧力計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">濃度計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">騒音計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">振動レベル計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">照度計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">pH計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">穀粒水分計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">屈折度計</div>
+                        <div class="bg-white p-3 rounded-md shadow-sm text-center">革面積計</div>
+                    </div>
+                </section>
+
+                <hr class="my-10">
+
+                <p class="text-center text-secondary mb-10 max-w-3xl mx-auto">
+                    特定計量器は、その主な用途によって大きく２つに分けられます。<br>どちらについて詳しく知りたいですか？
+                </p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div id="goto-business" class="choice-card bg-card p-8 rounded-lg shadow-md border-t-4 border-green-400 text-center cursor-pointer">
+                        <div class="text-6xl mb-4">🛒</div>
+                        <h2 class="text-2xl font-bold mb-2">取引・証明用</h2>
+                        <p class="text-secondary">スーパーでの量り売りや料金計算など、ビジネスや公的な証明に使われる、厳格な検査に合格した計量器です。</p>
+                    </div>
+                    <div id="goto-household" class="choice-card bg-card p-8 rounded-lg shadow-md border-t-4 border-blue-400 text-center cursor-pointer">
+                        <div class="text-6xl mb-4">🏠</div>
+                        <h2 class="text-2xl font-bold mb-2">家庭用</h2>
+                        <p class="text-secondary">個人の健康管理や料理など、家庭内で使われる計量器。独自のルールとマークが定められています。</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="business-page" class="page fade-in">
+            <header class="text-center mb-10">
+                <button id="back-to-main-from-business" class="float-left text-accent-business hover:underline">&lt; 戻る</button>
+                <h1 class="text-4xl md:text-5xl font-bold text-accent-business mb-2">取引・証明用特定計量器</h1>
+                <p class="text-secondary text-lg">社会の公正な経済活動の基盤</p>
+            </header>
+            <nav class="flex justify-center border-b-2 border-gray-200 mb-8 overflow-x-auto">
+                <div class="flex space-x-2 md:space-x-6 px-2">
+                    <a data-target="business-what" class="nav-item active-business font-semibold py-2 px-2 md:px-4">「取引・証明」とは？</a>
+                    <a data-target="business-seal" class="nav-item font-semibold py-2 px-2 md:px-4">信頼の証</a>
+                    <a data-target="business-system" class="nav-item font-semibold py-2 px-2 md:px-4">信頼を支える制度</a>
+                    <a data-target="business-rules" class="nav-item font-semibold py-2 px-2 md:px-4">精度と使用のルール</a>
+                </div>
+            </nav>
+            <main>
+                <section id="business-what" class="content-section active">
+                    <h2 class="text-2xl font-bold text-center mb-4">なぜ、厳格なルールが必要なのか？</h2>
+                    <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">「取引・証明」とは、計量の結果が第三者との権利や義務に直接影響を与える行為です。もし計量が不正確だと、社会的な不利益や混乱につながるため、法律で厳しく管理されています。</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-card p-6 rounded-lg shadow">
+                            <h3 class="font-bold text-lg mb-2 flex items-center"><span class="text-2xl mr-3">💰</span>取引</h3>
+                            <p class="text-secondary text-sm">物の重さや量に基づいて価格が決まる商行為。例えば…</p>
+                            <ul class="list-disc list-inside text-secondary mt-2 text-sm space-y-1">
+                                <li>スーパーでの肉や魚の量り売り</li>
+                                <li>ガソリンスタンドでの給油</li>
+                                <li>宅配便の荷物の重さに応じた送料計算</li>
+                            </ul>
+                        </div>
+                        <div class="bg-card p-6 rounded-lg shadow">
+                            <h3 class="font-bold text-lg mb-2 flex items-center"><span class="text-2xl mr-3">📄</span>証明</h3>
+                            <p class="text-secondary text-sm">計量結果を公に示し、事実として記録・通知する行為。例えば…</p>
+                            <ul class="list-disc list-inside text-secondary mt-2 text-sm space-y-1">
+                                <li>病院が発行する健康診断書への体重の記載</li>
+                                <li>薬局での処方箋に基づく薬剤の調剤</li>
+                                <li>学校での体力測定の記録</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mt-8" role="alert">
+                        <p class="font-bold">重要：</p>
+                        <p>家庭用特定計量器（ヘルスメーター等）をこれらの「取引・証明」に使うことは、計量法で固く禁じられています。</p>
+                    </div>
+                </section>
+                <section id="business-seal" class="content-section">
+                    <h2 class="text-2xl font-bold text-center mb-4">国家が保証する精度の証</h2>
+                    <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">取引・証明用のはかりは、使用される前に国の検査に合格しなければなりません。その合格の証が「検定証印」や「基準適合証印」です。</p>
+                    <div class="bg-card p-8 rounded-lg shadow-lg max-w-lg mx-auto">
+                        <!-- Image section fixed: Removed border and rounding styles to prevent rendering bugs -->
+                        <div class="grid grid-cols-2 gap-8 items-start text-center mb-4">
+                            <div>
+                                <img src="data:image/gif;base64,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" alt="検定証印" class="w-32 h-32 mx-auto object-contain">
+                                <p class="mt-2 text-sm font-semibold">検定証印</p>
+                            </div>
+                            <div>
+                                <img src="data:image/gif;base64,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" alt="基準適合証印" class="w-32 h-32 mx-auto object-contain">
+                                <p class="mt-2 text-sm font-semibold">基準適合証印</p>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-center pt-4">検定証印・基準適合証印</h3>
+                        <p class="text-secondary text-sm text-center">これらのマークは、計量器が法で定められた基準を満たしていることを国や指定機関が証明するものです。<br>これらがない計量器は取引・証明に使用できません。</p>
+                    </div>
+                </section>
+                <section id="business-system" class="content-section">
+                     <h2 class="text-2xl font-bold text-center mb-4">信頼を維持するための二段構えの制度</h2>
+                    <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">取引・証明用はかりの信頼性は、使う前の「検定」と、使い始めてからの「定期検査」という2つの制度によって維持されています。</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex flex-col items-center mr-4">
+                                <div class="bg-accent-business text-white bg-green-500 rounded-full w-16 h-16 flex items-center justify-center font-bold text-lg">製造</div>
+                                <div class="w-0.5 h-12 bg-gray-300"></div>
+                            </div>
+                            <div class="pt-4"><p class="text-secondary">メーカーがはかりを製造します。</p></div>
+                        </div>
+                        <div class="flex items-start">
+                             <div class="flex flex-col items-center mr-4">
+                                <div class="bg-accent-business text-white bg-green-500 rounded-full w-16 h-16 flex items-center justify-center font-bold text-lg">検定</div>
+                                <div class="w-0.5 h-12 bg-gray-300"></div>
+                            </div>
+                            <div class="bg-card p-4 rounded-lg shadow-md flex-1">
+                                <h3 class="font-bold">① 検定（使用前の検査）</h3>
+                                <p class="text-secondary text-sm mt-1">新品や修理後のはかりが、市場に出る前に受ける国の検査です。構造や性能が基準に適合しているか厳しくチェックされます。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex flex-col items-center mr-4">
+                                <div class="bg-accent-business text-white bg-green-500 rounded-full w-16 h-16 flex items-center justify-center font-bold text-lg">使用</div>
+                                <div class="w-0.5 h-12 bg-gray-300"></div>
+                            </div>
+                            <div class="pt-4"><p class="text-secondary">合格後、お店などで使用開始。</p></div>
+                        </div>
+                         <div class="flex items-start">
+                             <div class="flex flex-col items-center mr-4">
+                                <div class="bg-accent-business text-white bg-green-500 rounded-full w-16 h-16 flex items-center justify-center font-bold text-lg">定期検査</div>
+                            </div>
+                            <div class="bg-card p-4 rounded-lg shadow-md flex-1">
+                                <h3 class="font-bold">② 定期検査（使用中の検査）</h3>
+                                <p class="text-secondary text-sm mt-1">使用中の劣化などにより精度が狂っていないかを確認するため、原則2年に1度受ける義務のある検査です。これにより継続的な信頼性が担保されます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                 <section id="business-rules" class="content-section">
+                    <h2 class="text-2xl font-bold text-center mb-4">用途で決まる精度と、場所のルール</h2>
+                    <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">取引・証明用のはかりは、全てのものが同じではありません。求められる精度によって等級が分かれており、高精度なものは使用できる場所も定められています。</p>
+                    <div class="bg-card p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-lg mb-4">精度等級</h3>
+                        <p class="text-secondary text-sm mb-4">知りたい等級を選んでください。主な用途が表示されます。</p>
+                        <select id="accuracy-class-selector" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="1_2">１級・２級</option>
+                            <option value="3" selected>３級</option>
+                            <option value="4">４級</option>
+                        </select>
+                        <div id="accuracy-class-info" class="bg-gray-50 p-4 mt-4 rounded-lg">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+                    <div class="bg-card p-6 rounded-lg shadow-md mt-6">
+                        <h3 class="font-bold text-lg mb-2">使用地区</h3>
+                        <p class="text-secondary text-sm">地球の重力は場所によってわずかに異なります。そのため、特に高精度な１級・２級のはかりは、その重力に合わせて調整されており、定められた「使用地区」（例：関東地区、関西地区など）以外では取引・証明に使用できません。これは、場所が変わっても常に正確な計量を保証するための重要なルールです。</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <div id="household-page" class="page fade-in">
+             <header class="text-center mb-10">
+                 <button id="back-to-main-from-household" class="float-left text-accent-household hover:underline">&lt; 戻る</button>
+                <h1 class="text-4xl md:text-5xl font-bold text-accent-household mb-2">わかる！家庭用特定計量器</h1>
+                <p class="text-secondary text-lg">私たちの暮らしを支える「はかる」のルール</p>
+            </header>
+             <nav class="flex justify-center border-b-2 border-gray-200 mb-8 overflow-x-auto">
+                <div class="flex space-x-2 md:space-x-6 px-2">
+                    <a data-target="comparison" class="nav-item active-household font-semibold py-2 px-2 md:px-4">2つの「はかり」</a>
+                    <a data-target="household-rules" class="nav-item font-semibold py-2 px-2 md:px-4">家庭用のルール</a>
+                    <a data-target="accuracy" class="nav-item font-semibold py-2 px-2 md:px-4">どれくらいの精度？</a>
+                    <a data-target="responsibility" class="nav-item font-semibold py-2 px-2 md:px-4">事業者の責任</a>
+                </div>
+            </nav>
+            <main>
+                <section id="comparison" class="content-section active">
+                    <h2 class="text-2xl font-bold text-center mb-4">知っていますか？ はかりには2つの世界があります</h2>
+                    <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">計量法では、はかりを大きく2種類に分けています。お店で使う「取引・証明用」と、家庭で使う「家庭用」。これらは見た目が似ていても、ルールや信頼性の証が全く異なります。</p>
+                    <div class="bg-card p-4 sm:p-6 rounded-lg shadow-md overflow-x-auto">
+                        <table class="w-full border-collapse comparison-table min-w-[600px]">
+                            <thead>
+                                <tr>
+                                    <th>属性</th>
+                                    <th class="bg-blue-50 text-blue-800">家庭用<br>特定計量器</th>
+                                    <th class="bg-green-50 text-green-800">取引・証明用<br>特定計量器</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-bold">主な使いみち</td>
+                                    <td>料理や個人の体重測定など、私的な利用のみ</td>
+                                    <td>スーパーでの量り売り、宅配便の料金計算、健康診断書の記録など</td>
+                                </tr>
+                                <!-- Image row fixed -->
+                                <tr>
+                                    <td class="font-bold">信頼のマーク</td>
+                                    <td>
+                                        <img src="data:image/gif;base64,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" alt="丸正マーク" class="w-24 h-24 mx-auto object-contain">
+                                        <p class="text-sm font-semibold mt-1">丸正マーク</p>
+                                    </td>
+                                    <td>
+                                        <div class="flex justify-center items-center gap-2">
+                                            <div>
+                                                <img src="data:image/gif;base64,R0lGODlh+gDhANUAAAAAAPj4+Li4uFBQUKCgoMvLy2lpaTk5OSAgIBEREfDw8IODg5iYmOLi4unp6QgICNvb2xgYGEBAQEpKSlhYWHx8fKqqqra2tnJycigoKGdnZ4iIiJCQkDIyMtHR0cfHx////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAACAALAAAAAD6AOEAAAb/wIBwSCwaj8ikcslsOp/QqHRKrVqv2Kx2y+16v+CweEwum58FgXrNbrvf8Lh8Tq/b7/i8fs/vO6AFAIKDhIWGh4iJiouMjY6PkJGSk5SVABdQApabnJ2en6ChoAKZoqanqKmqqwCkT5qssbKztKuuTrC1uru8vYq3Tbm+w8TFqsBMwsbLzM2SyEvKztPU1a2l1tnaxtBK0tvg4azdSd/i5+if5Ejm6e7vketH7fD19ofyRvT3/Pb5Rfv6CUz3j0jAgQjBFRxyMKHDaguFNHxIkVnEABMrahx2MePGj7o6ghzpTCTJk8VMolzJSyXLl7Ncwpx5DBvNm6hk4tzpSSfP/5+VfAIdCkmoJQkDkipdyrSp06dQo0qdSrWq1atYsUYQZbQShDNgw4pFQoGrzU8FAigYy7atmLUDzL4Sldat3btc4obqSqku3r+ApegdddaT38CIEyMZrK5wp8OKIytm3NMxJ8iSM/+l3InvJMyaQ7flzMmzJNCiU4Mlvcl0JNSqY49hbck1JNiyc3uhHdTyJty6g2fhTcn2I+DCk1MhPsm4I+TKoz9h/sy3JejSsyuhHs96JezawxfhXtR7X/Hop8vFRTe9+yXkHzlvBP599viO5jOqbz86/kb6LcLfEhYQYOCBCCao4IIMNujggxBGKOGEX03xHyMBKjKgEgkQ5f8IA8utF0x7WyDg4SIPAEBAiHuZ9xkXJp64yIoWipgMiVrEKGMiNApmYzQ4ZqHjjof0GMWFi2SYyIZJDElkIUZCgeQvLp4G45OIRKlei3OFwiQSTmIpiJZOTJmIkoh8eUSYYpLZhJmIoHmImkawiaWbTMCJT5WvXSkmlCwS1iUodBZh55N4wvejN0FicSiRiW63aDmNXvHojpEmoachchpSKBGXypjpYpOyU6kVoZ446hGbFtJpIZ8OkaqHqxrRKiGvEhKrELMSVet4pc5zahW9DvUrEbcOkusguwZQLFDHDpGsIMsK0uyzP0UrxLTXDIqWn38Oom0A3FYLwLXhCpL/4rjl8nkbFx2mKwiINXLJnpdcVGDAvvz26++/AAcssAEHePKABgMnrLDCHwTamLeGaceBJwno1i7Ej0m31gIUryXbxfcSqh3HnSTgcWwgj4hvdiRzYnJuKd+4snQtb/Lyx8HqM6xuNVtyM8o5A7Rzbj1X8rNqMQM5c3RFU3J0akkzurRyTU/ytGhRUzp1clVLcnVoWZu6tXBdR/K1ZmELO3ZwZUNydmZp67w2zx3DHLRBQ8vW9iNvSxa30HMTXTfO9qosMsuDA124zIfTnDjSdzOUd2x7O9J3ZH/jHbjej0MduUSTq1Z5I5dP9jlGoac2OiOlJ5a55JtT3jnWp3tE/9/IszuhwO689+77771X8TrosYueOxMNJKD88sw37/zyHQhfe+qirb5I60Y0wAkC0i+udONMH7+E9ptw73BlGF+Ge8knQ0G+JebXK2jI3yLO/hTvVxK/j95LDT7V4lNC/iixvyNNr3iqC2ASBjiJAkrpgP/jmgKRwEBJOHBL8zNc/Rx3PylUMBIXLBMENxi+Dkbhg5AI4ZtGGDH7uax9T0DhI1SYJxZmjAoOyKEOd8jDHvoQhlSwniKwVwQZOoKGiuqf1iLoBAI8IAEPiKIUp0jFKkoRihjIghATQUQiGLERSJSUEsXGxCYQABQG0OIEj/BFRoRRUzZU3xTO+Ik0Yv9hi4jo4hDauIg3kmqMaisjE+joCTteAY+H0KMQ+KgIP7Iqjr+hAiE7YUgrINIQigwAIxPhSFtB8jqSRKMaTei+7XUvg4wjIRQmyYlKVuGShcjkJhHRSWABUm6CXAIrN+HKIK4xe6Y8X2fcdZxQ1nGUL8RfMOX3MPq1UAq7tEQvpwBLQshymfxD5fdU+YRoVmKaUqjmIK5ZvlM2U4PPjII3KQHOKIhTEOSEnznR58wbQlOUd/xlEbFpwFsCLpdKWOck2gmFdwIgnvqb5zDTF8k54vOQ+vQiPx/oT80BNAkClQRBn2BQhBJQoaUh5nOMWUhk2gyITZjlIWqJrE9+h6T/lDSpz1CKvIli8JypTOcqH2rJiO7RpiKsKOwuioSMRmKjTugoTccH1BUKlXhEPYJRIYHUJihVmeUUZkgZCkqHHjOfpIxhU2v4VNQh0AhTfURVmXBVD441idr0HzebyNNX+nSRbxVjXJc4VzPW1Zclw2Fe4VhW2+0Hpq2UqdEg0IDGOvaxkH1sILLKTHqi057q/Cs168FSabn0PF4tKVjf0dltffZFoY3paN1RWnKd1kqpTexq09Ha4Zk1qmjVbDg5C9LWiPR2seWlYs9R29f2KbjSHK44iltY6hUhrY5Y6xIM2gvm7pWMfR2kbt3JW636lqsvRe43lRsO6+L0mzrt/+Z2C9rdyi60nnK851chCg/zWjanmN3pfHta397W5reHFS87yQsO+773svHN7H7t2l/v/he8oJWvaOlLWv/2BsKolbBqKcxaCxcHwAJCrHBniw4DbxW+DdWwbDlMWw83B8QaEnFysbABAKTIHRlwcXUwDFsVj/gKFahHxRx8YRR31cczvkIBGMDkJjv5yVCOspSnTOUqQ9kCOu4Oj4+L5PH2hwy2NWyIBTzQL4PZuO8is0bNPBs0F1PNR2WzGMLsXCJAtxHSlXM2zyvX9NJ1wXreAp3P+tz1BjrL5dlymrs84EN3YdC4LTSgHX0FSGdXl4amdD+vG8hLBzTTmv7pff/Rm1/1TjrU7j0xglOs4Amj2gqW9rNfT/qinIal57GKKhrrVc+81XW2qU1r51663/muqi7HvYjm0toOydb2bYstkWPLdVnQ9uzzI60s4V97T9Ke6jUzi23u+3JbIdb0q4mN1m/DdVzbzvd6u71qPtc6j/DO97e9jV2gY3pcePbtebm96f9je9Y13vW9/53tPXdaYHr+phLVbjBE6xfT2RR4fI+MH4pbmpPIGAAE8iKyEdO8qzkeeHz/vXBgy2vRCJaPjBekoxbDgATf9fI4WW0vGz+YJxHuNU0JwTPi7zqIwM96IIY+ocV/Wadp0vpL2b6SOH8J6jv2OcZPjrSra7ZZaz3WOtB53qivc5lsNNc7DCXOnCdHi605yfmaZp5y90OILjPSe47f/nb1R5gtldd73Xn+5j9Lia6Y8junsL70wF/eMHHmOqFZ3ySEA8rxbdd8lRyvMwhjyXDT17zcef8kzyfebIv2uxzx/yZKK8ry/+dyEs3fdNRn3fYR132Uyd851UfJ9YzK5Q3RnrNeb8n0N99CgwQPiEiUIUJiAITT3BAH+IQcW8cQAIHyL72t8/97nv/++APv/jHT/7ym5/7FKiCB6YPhz9g/P3wj7/850//+tv//vMPAgA7" alt="検定証印" class="w-20 h-20 mx-auto object-contain">
+                                                <p class="text-xs mt-1">検定証印</p>
+                                            </div>
+                                            <div>
+                                                <img src="data:image/gif;base64,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" alt="基準適合証印" class="w-20 h-20 mx-auto object-contain">
+                                                <p class="text-xs mt-1">基準適合証印</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">検査</td>
+                                    <td><span class="font-bold text-red-600">なし</span><br>(メーカーの自主検査)</td>
+                                    <td><span class="font-bold text-green-600">あり</span><br>国による検定(使用前)と<br>定期検査(2年に1度)</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">罰則</td>
+                                    <td>マーク<span class="font-bold">なし</span>で<span class="font-bold">販売</span>すると罰則</td>
+                                    <td>マーク<span class="font-bold">なし</span>で<span class="font-bold">使用</span>すると罰則</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <section id="household-rules" class="content-section">
+                    <h2 class="text-2xl font-bold text-center mb-4">家庭用だけの特別ルール「丸正マーク」</h2>
+                    <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">家庭用特定計量器には、国の検査義務がありません。その代わりに、メーカーが「この製品は国の定めた技術基準（JIS）を満たしています」と自己証明するためのマークがあります。それが「丸正マーク」です。</p>
+                    <div class="bg-card p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-lg mb-4 text-center">このマーク、見たことありますか？</h3>
+                        <div class="bg-gray-50 p-6 rounded-lg md:flex items-center">
+                            <!-- Image source fixed -->
+                            <img src="data:image/gif;base64,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" alt="丸正マーク" class="w-24 h-24 mr-6 mb-4 md:mb-0 flex-shrink-0 object-contain mx-auto md:mx-0">
+                            <div>
+                                <h4 class="font-bold">表示の決まり</h4>
+                                <ul class="list-disc list-inside text-secondary text-sm mt-1">
+                                    <li>直径8mm以上であること</li>
+                                    <li>製品の見やすい場所に表示されていること</li>
+                                </ul>
+                                <p class="text-sm mt-2 text-red-600 font-semibold">違反して販売した場合、50万円以下の罰金が科される可能性があります。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section id="accuracy" class="content-section"><h2 class="text-2xl font-bold text-center mb-4">どれくらいの精度が求められるの？</h2><p class="text-center text-secondary mb-8 max-w-3xl mx-auto">家庭用特定計量器の精度は、日本産業規格（JIS）で定められています。下のシミュレーターで、どれくらいの誤差が許されているのか見てみましょう。</p><div class="bg-card p-6 rounded-lg shadow-md"><h3 class="font-bold text-xl mb-4">🍳 調理用はかり（最大3kg / 1g単位）の例</h3><div class="mb-4"><label for="kitchen-slider" class="block text-sm font-medium text-gray-700">はかる重さ: <span id="kitchen-weight" class="font-bold text-accent-household">1500 g</span></label><input id="kitchen-slider" type="range" min="1" max="3000" value="1500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"></div><div class="bg-gray-50 p-4 rounded-lg text-center"><p class="text-secondary">この重さをはかる時の、許容される誤差（<span class="tooltip">器差<span class="tooltiptext">計量器の表示値と、本当の重さとの差のこと。</span></span>）は...</p><p class="text-2xl font-bold text-primary mt-2">± <span id="kitchen-error">1.5</span> g</p><p class="text-xs text-secondary mt-1">（<span id="kitchen-error-min">1498.5</span>g ～ <span id="kitchen-error-max">1501.5</span>g の表示ならOK）</p></div></div><div class="bg-card p-6 rounded-lg shadow-md mt-6"><h3 class="font-bold text-xl mb-4">🏋️ 一般用体重計（最大150kg / 50g単位）の例</h3><div class="mb-4"><label for="body-slider" class="block text-sm font-medium text-gray-700">はかる体重: <span id="body-weight" class="font-bold text-accent-household">75.0 kg</span></label><input id="body-slider" type="range" min="1" max="150" value="75" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"></div><div class="bg-gray-50 p-4 rounded-lg text-center"><p class="text-secondary">この体重をはかる時の、許容される誤差（器差）は...</p><p class="text-2xl font-bold text-primary mt-2">± <span id="body-error">50</span> g</p><p class="text-xs text-secondary mt-1">（<span id="body-error-min">74.95</span>kg ～ <span id="body-error-max">75.05</span>kg の表示ならOK）</p></div></div></section>
+                <section id="responsibility" class="content-section"><h2 class="text-2xl font-bold text-center mb-4">信頼を支える、それぞれの責任</h2><p class="text-center text-secondary mb-8 max-w-3xl mx-auto">製品が私たちの手元に届くまでには、作る人、輸入する人、売る人が関わっています。計量法は、それぞれの段階で責任を定めています。</p><div class="space-y-4"><div class="flex items-start"><div class="flex flex-col items-center mr-4"><div class="bg-accent-household text-white bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">1</div><div class="w-0.5 h-16 bg-gray-300"></div></div><div class="bg-card p-4 rounded-lg shadow-md flex-1"><h3 class="font-bold text-lg">製造事業者 <span class="text-sm font-normal text-secondary ml-2">(作る人)</span></h3><ul class="list-disc list-inside text-secondary mt-2 text-sm space-y-1"><li>国が定める技術基準(JIS)に合わせて製品を作ること</li><li>基準を満たした製品に「丸正マーク」を表示すること</li><li>事業を始める前に国に届け出ること</li></ul></div></div><div class="flex items-start"><div class="flex flex-col items-center mr-4"><div class="bg-accent-household text-white bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">2</div><div class="w-0.5 h-16 bg-gray-300"></div></div><div class="bg-card p-4 rounded-lg shadow-md flex-1"><h3 class="font-bold text-lg">輸入事業者 <span class="text-sm font-normal text-secondary ml-2">(海外から仕入れる人)</span></h3><ul class="list-disc list-inside text-secondary mt-2 text-sm space-y-1"><li>輸入する製品が日本の技術基準(JIS)に合っているか確認すること</li><li>基準を満たした製品に「丸正マーク」を表示すること</li></ul></div></div><div class="flex items-start"><div class="flex flex-col items-center mr-4"><div class="bg-accent-household text-white bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">3</div></div><div class="bg-card p-4 rounded-lg shadow-md flex-1"><h3 class="font-bold text-lg">販売事業者 <span class="text-sm font-normal text-secondary ml-2">(お店などで売る人)</span></h3><ul class="list-disc list-inside text-secondary mt-2 text-sm space-y-1"><li>「丸正マーク」がない製品を販売しない、陳列しないこと</li><li class="font-semibold">技術的な内容は知らなくても、マークの有無を確認する重要な責任がある</li></ul></div></div></div></section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Page navigation
+        const mainPage = document.getElementById('main-page');
+        const businessPage = document.getElementById('business-page');
+        const householdPage = document.getElementById('household-page');
+        
+        const gotoBusinessBtn = document.getElementById('goto-business');
+        const gotoHouseholdBtn = document.getElementById('goto-household');
+        
+        const backToMainFromBusinessBtn = document.getElementById('back-to-main-from-business');
+        const backToMainFromHouseholdBtn = document.getElementById('back-to-main-from-household');
+
+        function showPage(pageToShow) {
+            [mainPage, businessPage, householdPage].forEach(page => {
+                page.classList.remove('active');
+            });
+            pageToShow.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        gotoBusinessBtn.addEventListener('click', () => showPage(businessPage));
+        gotoHouseholdBtn.addEventListener('click', () => showPage(householdPage));
+        backToMainFromBusinessBtn.addEventListener('click', () => showPage(mainPage));
+        backToMainFromHouseholdBtn.addEventListener('click', () => showPage(mainPage));
+
+        // Tab navigation logic
+        function setupTabNavigation(pageId, activeClass) {
+            const navItems = document.querySelectorAll(`#${pageId} .nav-item`);
+            const contentSections = document.querySelectorAll(`#${pageId} .content-section`);
+
+            function resetTabs() {
+                if (navItems.length > 0) {
+                    navItems.forEach(item => item.classList.remove(activeClass));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    navItems[0].classList.add(activeClass);
+                    if (contentSections.length > 0) {
+                        const firstTargetId = navItems[0].getAttribute('data-target');
+                        const firstTarget = document.getElementById(firstTargetId);
+                        if(firstTarget) firstTarget.classList.add('active');
+                    }
+                }
+            }
+            
+            resetTabs();
+            
+            if(pageId === 'household-page') {
+                gotoHouseholdBtn.addEventListener('click', resetTabs);
+            }
+            if(pageId === 'business-page') {
+                gotoBusinessBtn.addEventListener('click', resetTabs);
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+                    navItems.forEach(nav => nav.classList.remove(activeClass));
+                    item.classList.add(activeClass);
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    const targetSection = document.getElementById(targetId);
+                    if(targetSection) targetSection.classList.add('active');
+                });
+            });
+        }
+
+        setupTabNavigation('household-page', 'active-household');
+        setupTabNavigation('business-page', 'active-business');
+
+        // Accuracy Simulator Logic (Household)
+        const kitchenSlider = document.getElementById('kitchen-slider');
+        const kitchenWeightEl = document.getElementById('kitchen-weight');
+        const kitchenErrorEl = document.getElementById('kitchen-error');
+        const kitchenErrorMinEl = document.getElementById('kitchen-error-min');
+        const kitchenErrorMaxEl = document.getElementById('kitchen-error-max');
+        const bodySlider = document.getElementById('body-slider');
+        const bodyWeightEl = document.getElementById('body-weight');
+        const bodyErrorEl = document.getElementById('body-error');
+        const bodyErrorMinEl = document.getElementById('body-error-min');
+        const bodyErrorMaxEl = document.getElementById('body-error-max');
+
+        function updateKitchenError() {
+            if(!kitchenSlider) return;
+            const weight = parseFloat(kitchenSlider.value);
+            kitchenWeightEl.textContent = `${weight} g`;
+            let error = (weight <= 750) ? 1 : 1.5;
+            kitchenErrorEl.textContent = error.toFixed(1);
+            kitchenErrorMinEl.textContent = (weight - error).toFixed(1);
+            kitchenErrorMaxEl.textContent = (weight + error).toFixed(1);
+        }
+
+        function updateBodyError() {
+            if(!bodySlider) return;
+            const weight = parseFloat(bodySlider.value);
+            bodyWeightEl.textContent = `${weight.toFixed(1)} kg`;
+            let errorGrams = (weight <= 75) ? 50 : 150;
+            const errorKg = errorGrams / 1000;
+            bodyErrorEl.textContent = errorGrams;
+            bodyErrorMinEl.textContent = (weight - errorKg).toFixed(2);
+            bodyErrorMaxEl.textContent = (weight + errorKg).toFixed(2);
+        }
+        
+        if(kitchenSlider) kitchenSlider.addEventListener('input', updateKitchenError);
+        if(bodySlider) bodySlider.addEventListener('input', updateBodyError);
+        if(kitchenSlider) updateKitchenError();
+        if(bodySlider) updateBodyError();
+
+        // Accuracy Class Selector Logic (Business)
+        const accuracySelector = document.getElementById('accuracy-class-selector');
+        const accuracyInfo = document.getElementById('accuracy-class-info');
+        const accuracyData = {
+            '1_2': {
+                title: '１級・２級：極めて高い精度',
+                description: '貴金属や宝石の取引、医薬品の調剤など、ごくわずかな誤差も許されない精密な計量に使われます。'
+            },
+            '3': {
+                title: '３級：一般的な商取引',
+                description: 'スーパーマーケットや商店など、一般的な商取引で最も広く使われている等級です。'
+            },
+            '4': {
+                title: '４級：粗大な計量',
+                description: '穀物やスクラップなど、比較的大きな単位で取引される物品の計量に使われます。'
+            }
+        };
+
+        function updateAccuracyInfo() {
+            if(!accuracySelector) return;
+            const selectedValue = accuracySelector.value;
+            const data = accuracyData[selectedValue];
+            if (data) {
+                accuracyInfo.innerHTML = `
+                    <h4 class="font-bold text-primary">${data.title}</h4>
+                    <p class="text-secondary text-sm mt-1">${data.description}</p>
+                `;
+            }
+        }
+
+        if(accuracySelector) accuracySelector.addEventListener('change', updateAccuracyInfo);
+        if(accuracySelector) updateAccuracyInfo();
+    </script>
+</body>
+</html>
+
